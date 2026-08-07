@@ -1,4 +1,3 @@
-
 using OrderService.Application.Mappers;
 using OrderService.Application.Services;
 using OrderService.Domain.Interfaces;
@@ -7,6 +6,9 @@ using OrderService.Infrastructure.Data;
 using OrderService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
+using OrderService.Application.Validators;
+using OrderService.Api.Middleware;
 
 namespace OrderService.Api
 {
@@ -34,16 +36,16 @@ namespace OrderService.Api
             // =========================================================================
             // 3. AUTOMAPPER REGISTRATION
             // =========================================================================
-            // Corrected to use type reference instead of Assembly reference
-            builder.Services.AddAutoMapper(typeof(OrderMappingProfile));
-
+            // =========================================================================
+            // 3. AUTOMAPPER REGISTRATION
+            // =========================================================================
+            builder.Services.AddAutoMapper((Action<AutoMapper.IMapperConfigurationExpression>)null!, typeof(OrderMappingProfile).Assembly);
             // =========================================================================
             // 4. HTTP CLIENT CONFIGURATION (Microservice Communication)
             // =========================================================================
             var productServiceUrl = builder.Configuration["ExternalServices:ProductServiceUrl"]
                 ?? throw new InvalidOperationException("ExternalServices:ProductServiceUrl configuration is missing.");
 
-            // Register our typed ProductServiceClient with a configured HttpClient base URL
             builder.Services.AddHttpClient<IProductServiceClient, ProductServiceClient>(client =>
             {
                 client.BaseAddress = new Uri(productServiceUrl);
@@ -56,6 +58,8 @@ namespace OrderService.Api
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderDtoValidator>();
 
             var app = builder.Build();
 
@@ -72,6 +76,8 @@ namespace OrderService.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseAuthorization();
 

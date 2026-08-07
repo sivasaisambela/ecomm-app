@@ -17,5 +17,7 @@ namespace OrderService.Application.Services
 
         // Retrieves all orders for a specific customer
         Task<IEnumerable<OrderDto>> GetOrdersByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default);
+
+        Task<OrderDto> UpdateOrderStatusAsync(Guid orderId, UpdateOrderStatusDto request, CancellationToken cancellationToken = default);
     }
 }

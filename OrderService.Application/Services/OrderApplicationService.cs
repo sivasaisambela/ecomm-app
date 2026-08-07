@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
+using ValidationException = Shared.Core.Exceptions.ValidationException;
+using OrderService.Domain.Enums;
 
 namespace OrderService.Application.Services
 {
@@ -16,19 +19,37 @@ namespace OrderService.Application.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IProductServiceClient _productServiceClient;
         private readonly IMapper _mapper;
+        private readonly IValidator<CreateOrderDto> _createOrderValidator;
+        private readonly IValidator<UpdateOrderStatusDto> _updateStatusValidator; // Added!
 
         public OrderApplicationService(
             IOrderRepository orderRepository,
             IProductServiceClient productServiceClient,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<CreateOrderDto> createOrderValidator,
+            IValidator<UpdateOrderStatusDto> updateStatusValidator)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _productServiceClient = productServiceClient ?? throw new ArgumentNullException(nameof(productServiceClient));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _createOrderValidator = createOrderValidator ?? throw new ArgumentNullException(nameof(createOrderValidator));
+            _updateStatusValidator = updateStatusValidator;
         }
 
         public async Task<OrderDto> CreateOrderAsync(CreateOrderDto createDto, CancellationToken cancellationToken = default)
         {
+            // 1. Validate input using FluentValidation
+            var validationResult = await _createOrderValidator.ValidateAsync(createDto, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+                throw new ValidationException(errors);
+            }
+
             // 1. Create a new Order entity
             var order = new Order(Guid.NewGuid(), createDto.CustomerId);
 
@@ -80,6 +101,66 @@ namespace OrderService.Application.Services
         {
             var orders = await _orderRepository.GetByCustomerIdAsync(customerId, cancellationToken);
             return _mapper.Map<IEnumerable<OrderDto>>(orders);
+        }
+
+        public async Task<OrderDto> UpdateOrderStatusAsync(Guid orderId, UpdateOrderStatusDto request, CancellationToken cancellationToken = default)
+        {
+            // 1. Validate input shape first (empty/garbage status caught here)
+            var validationResult = await _updateStatusValidator.ValidateAsync(request, cancellationToken);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+                throw new ValidationException(errors);
+            }
+
+            // 2. Fetch the order
+            var order = await _orderRepository.GetByIdAsync(orderId, cancellationToken)
+                ?? throw new OrderNotFoundException(orderId);
+
+            // 3. Parse the incoming string into our OrderStatus enum (safe now — already validated above)
+            Enum.TryParse<OrderStatus>(request.Status, ignoreCase: true, out var targetStatus);
+
+            // 4. Delegate to the correct domain transition method based on target status.
+            switch (targetStatus)
+            {
+                case OrderStatus.Paid:
+                    order.TransitionToPaid();
+                    break;
+
+                case OrderStatus.Shipped:
+                    order.TransitionToShipped();
+                    break;
+
+                case OrderStatus.Completed:
+                    order.TransitionToCompleted();
+                    break;
+
+                case OrderStatus.Cancelled:
+                    order.CancelOrder("Cancelled by admin.");
+                    break;
+
+                default:
+                    throw new ValidationException(new Dictionary<string, string[]>
+            {
+                { "status", new[] { $"Status '{request.Status}' cannot be set directly via this endpoint." } }
+            });
+            }
+
+            // 5. Persist changes
+            _orderRepository.Update(order);
+
+            var result = await _orderRepository.SaveChangesAsync(cancellationToken);
+            if (!result)
+            {
+                throw new OrderDomainException("An error occurred while updating the order status.");
+            }
+
+            // 6. Return mapped DTO
+            return _mapper.Map<OrderDto>(order);
         }
     }
 }

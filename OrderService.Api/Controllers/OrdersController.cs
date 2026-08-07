@@ -64,6 +64,23 @@ namespace OrderService.Api.Controllers
             var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId, cancellationToken);
             return Ok(new ApiResponse<IEnumerable<OrderDto>>(true, orders));
         }
+
+
+        /// <summary>
+        /// Update the status of an existing order (Admin only)
+        /// </summary>
+        [HttpPut("{id:guid}/status")]
+        [ProducesResponseType(typeof(ApiResponse<OrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateOrderStatusDto request, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("HTTP PUT: api/v1/orders/{id}/status - Updating status to {NewStatus}", id, request.Status);
+
+            var order = await _orderService.UpdateOrderStatusAsync(id, request, cancellationToken);
+
+            return Ok(new ApiResponse<OrderDto>(true, order, "Order status updated successfully."));
+        }
     }
 
     // A standard helper wrapper for unified JSON responses across our microservices
