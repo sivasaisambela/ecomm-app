@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Services;
+using Shared.Core.Responses;
 
 namespace ProductService.Api.Controllers;
 
@@ -177,4 +178,3 @@ public class ProductsController : ControllerBase
 }
 
 // A standard helper wrapper for unified JSON responses across our microservices
-public record ApiResponse<T>(bool Success, T? Data, string Message = "") where T : class?;

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.DTOs;
 using OrderService.Application.Services;
+using Shared.Core.Responses;
 
 namespace OrderService.Api.Controllers
 {
@@ -66,5 +67,5 @@ namespace OrderService.Api.Controllers
     }
 
     // A standard helper wrapper for unified JSON responses across our microservices
-    public record ApiResponse<T>(bool Success, T? Data, string Message = "") where T : class?;
+  
 }

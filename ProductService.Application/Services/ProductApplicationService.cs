@@ -11,6 +11,7 @@ using ProductService.Domain.Entities;
 using ProductService.Domain.Exceptions;
 using ProductService.Domain.Interfaces;
 using Shared.Core.Exceptions;
+using FluentValidation;
 
 namespace ProductService.Application.Services
 {
@@ -31,15 +32,17 @@ namespace ProductService.Application.Services
         private readonly IProductRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductApplicationService> _logger;
-
+        private readonly IValidator<CreateProductDto> _createValidator; // Added!
         public ProductApplicationService(
             IProductRepository repository,
             IMapper mapper,
-            ILogger<ProductApplicationService> logger)
+            ILogger<ProductApplicationService> logger,
+            IValidator<CreateProductDto> createValidator)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _createValidator = createValidator ?? throw new ArgumentNullException(nameof(createValidator));
         }
 
         // ============================================
@@ -116,28 +119,28 @@ namespace ProductService.Application.Services
         // CREATE OPERATIONS
         // ============================================
 
-        public async Task<ProductDto> CreateProductAsync(
-            CreateProductDto createDto,
-            string userId,
-            CancellationToken cancellationToken = default)
+        public async Task<ProductDto> CreateProductAsync(CreateProductDto createDto,string userId,CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Creating product: {ProductName}", createDto.Name);
 
-            // Validate input
-            if (string.IsNullOrWhiteSpace(createDto.Name))
-                throw new ValidationException(new() { { "name", new[] { "Product name is required" } } });
+            // 1. Perform fluent validation
+            var validationResult = await _createValidator.ValidateAsync(createDto, cancellationToken);
 
-            if (string.IsNullOrWhiteSpace(createDto.Sku))
-                throw new ValidationException(new() { { "sku", new[] { "Product SKU is required" } } });
+            if (!validationResult.IsValid)
+            {
+                // Converts FluentValidation errors into a dictionary matching your ValidationException
+                var errors = validationResult.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
-            if (createDto.Price <= 0)
-                throw new ValidationException(new() { { "price", new[] { "Product price must be greater than zero" } } });
+                throw new Shared.Core.Exceptions.ValidationException(errors);
+            }
 
-            // Check for duplicate SKU
+            // 2. Check for duplicate SKU
             if (await _repository.SkuExistsAsync(createDto.Sku, cancellationToken))
                 throw new DuplicateSkuException(createDto.Sku);
 
-            // Create product using factory method
+            // 3. Create product using domain constructor/factory
             var product = Product.Create(
                 createDto.Name,
                 createDto.Description,
@@ -149,13 +152,12 @@ namespace ProductService.Application.Services
                 createDto.Category,
                 userId);
 
-            // Save to repository
+            // 4. Save to repository
             await _repository.AddAsync(product, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Product created successfully: {ProductId}", product.Id);
 
-            // Map and return
             return _mapper.Map<ProductDto>(product);
         }
 
