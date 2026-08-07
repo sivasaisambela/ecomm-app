@@ -166,6 +166,17 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
+    /// Confirm reserved stock as a permanent sale (e.g., when payment succeeds)
+    /// </summary>
+    [HttpPost("{id:guid}/confirm-stock")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> ConfirmStock(Guid id, [FromBody] int quantity, CancellationToken cancellationToken)
+    {
+        await _productService.ConfirmReservedStockAsync(id, quantity, cancellationToken);
+        return NoContent();
+    }
+
+    /// <summary>
     /// Release reserved stock back to active inventory (e.g., when checkout is canceled)
     /// </summary>
     [HttpPost("{id:guid}/release-stock")]

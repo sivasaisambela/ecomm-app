@@ -18,6 +18,7 @@ namespace OrderService.Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IProductServiceClient _productServiceClient;
+        private readonly IOrderEventPublisher _eventPublisher;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateOrderDto> _createOrderValidator;
         private readonly IValidator<UpdateOrderStatusDto> _updateStatusValidator; // Added!
@@ -25,12 +26,14 @@ namespace OrderService.Application.Services
         public OrderApplicationService(
             IOrderRepository orderRepository,
             IProductServiceClient productServiceClient,
+             IOrderEventPublisher eventPublisher,
             IMapper mapper,
             IValidator<CreateOrderDto> createOrderValidator,
             IValidator<UpdateOrderStatusDto> updateStatusValidator)
         {
             _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
             _productServiceClient = productServiceClient ?? throw new ArgumentNullException(nameof(productServiceClient));
+            _eventPublisher = eventPublisher ?? throw new ArgumentNullException(nameof(eventPublisher));   // ADD THIS
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _createOrderValidator = createOrderValidator ?? throw new ArgumentNullException(nameof(createOrderValidator));
             _updateStatusValidator = updateStatusValidator;
@@ -85,7 +88,22 @@ namespace OrderService.Application.Services
                 throw new OrderDomainException("An error occurred while saving the order to the database.");
             }
 
-            // 4. Return the mapped DTO
+            // 4. Publish OrderCreated event so async processing (payment, stock confirm, email) can begin
+            var orderCreatedEvent = new OrderCreatedEvent
+            {
+                OrderId = order.Id,
+                CustomerId = order.CustomerId,
+                TotalAmount = order.TotalAmount,
+                Items = order.OrderItems.Select(i => new OrderCreatedEventItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
+
+            await _eventPublisher.PublishOrderCreatedAsync(orderCreatedEvent, cancellationToken);
+
+            // 5. Return the mapped DTO
             return _mapper.Map<OrderDto>(order);
         }
 
