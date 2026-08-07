@@ -1,20 +1,40 @@
 using ProductService.Api.Extensions;
-
+using ProductService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Api.Middleware;
+using ProductService.Application.Services;
+using ProductService.Domain.Interfaces;
+using ProductService.Infrastructure.Repositories;
+using ProductService.Application.Mappers;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ============================================
-// ADD SERVICES
+// 1. ADD SERVICES & CONTROLLERS
 // ============================================
-
-// Add controllers
 builder.Services.AddControllers();
 
+// ============================================
+// 2. DATABASE CONFIGURATION
+// ============================================
+builder.Services.AddDbContext<ProductContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ============================================
+// 3. DEPENDENCY INJECTION REGISTRATION
+// ============================================
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductApplicationService, ProductApplicationService>();
 
-// Add CORS
+// ============================================
+// 4. AUTOMAPPER REGISTRATION
+// ============================================
+builder.Services.AddAutoMapper(typeof(ProductMapper));
+
+// ============================================
+// 5. CORS CONFIGURATION
+// ============================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -25,52 +45,43 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add Authorization
 builder.Services.AddAuthorization();
-
-// ============================================
-// BUILD APP
-// ============================================
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // ============================================
-// MIDDLEWARE
+// 6. MIDDLEWARE PIPELINE
 // ============================================
-
-// Use CORS
 app.UseCors("AllowAll");
 
-// Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Product Service API v1");
-        options.RoutePrefix = string.Empty; // Swagger at root
     });
 }
-app.UseExceptionHandling();
-// HTTPS redirection
+
+// Global Exception Handler Middleware
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            success = false,
+            message = "An internal server error occurred."
+        });
+    });
+});
+
 app.UseHttpsRedirection();
-
-// Authorization
 app.UseAuthorization();
-
-// Map controllers
 app.MapControllers();
-
-// ============================================
-// DATABASE MIGRATION
-// ============================================
-
-// Apply migrations on startup
-
-
-// ============================================
-// RUN APP
-// ============================================
-// Exception handling
 
 app.Run();

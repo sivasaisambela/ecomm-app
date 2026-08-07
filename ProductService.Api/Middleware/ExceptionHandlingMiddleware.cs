@@ -1,27 +1,39 @@
-﻿using Shared.Core.Exceptions;
+﻿namespace ProductService.Api.Middleware;
 
-using System.Security.Authentication;
-using System.Text.Json;
-
-namespace ProductService.Api.Middleware;
-
-/// <summary>
-/// Global exception handling middleware
-/// 
-/// Catches all unhandled exceptions and returns proper responses.
-/// Prevents stack traces from leaking to clients.
-/// </summary>
 public class ExceptionHandlingMiddleware
 {
-}
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-/// <summary>
-/// Extension method to add exception handling middleware
-/// </summary>
-public static class ExceptionHandlingMiddlewareExtensions
-{
-    public static IApplicationBuilder UseExceptionHandling(this IApplicationBuilder app)
+    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
-        return app.UseMiddleware<ExceptionHandlingMiddleware>();
+        _next = next;
+        _logger = logger;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unhandled exception occurred");
+            await HandleExceptionAsync(context, ex);
+        }
+    }
+
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+        return context.Response.WriteAsJsonAsync(new
+        {
+            success = false,
+            message = "An internal server error occurred",
+            error = exception.Message
+        });
     }
 }
