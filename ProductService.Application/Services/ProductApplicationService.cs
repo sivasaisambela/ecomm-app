@@ -10,8 +10,13 @@ using ProductService.Application.DTOs;
 using ProductService.Domain.Entities;
 using ProductService.Domain.Exceptions;
 using ProductService.Domain.Interfaces;
-using Shared.Core.Exceptions;
 using FluentValidation;
+
+// 🔧 FIX: Resolve ambiguity between Shared.Core.Exceptions.ValidationException 
+// and FluentValidation.ValidationException by aliasing the one we want to use
+// throughout this file (our own domain-agnostic exception, not FluentValidation's).
+using ValidationException = Shared.Core.Exceptions.ValidationException;
+using Shared.Core.Exceptions;
 
 namespace ProductService.Application.Services
 {
@@ -119,7 +124,7 @@ namespace ProductService.Application.Services
         // CREATE OPERATIONS
         // ============================================
 
-        public async Task<ProductDto> CreateProductAsync(CreateProductDto createDto,string userId,CancellationToken cancellationToken = default)
+        public async Task<ProductDto> CreateProductAsync(CreateProductDto createDto, string userId, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Creating product: {ProductName}", createDto.Name);
 
@@ -133,7 +138,7 @@ namespace ProductService.Application.Services
                     .GroupBy(e => e.PropertyName)
                     .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
 
-                throw new Shared.Core.Exceptions.ValidationException(errors);
+                throw new ValidationException(errors);
             }
 
             // 2. Check for duplicate SKU

@@ -6,7 +6,8 @@ using ProductService.Application.Services;
 using ProductService.Domain.Interfaces;
 using ProductService.Infrastructure.Repositories;
 using ProductService.Application.Mappers;
-
+using FluentValidation;
+using ProductService.Application.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+// ============================================
+// 6. FLUENT VALIDATION REGISTRATION
+// ============================================
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
+
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -52,9 +58,13 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ============================================
-// 6. MIDDLEWARE PIPELINE
+// 7. MIDDLEWARE PIPELINE
 // ============================================
+app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+
+// Global Exception Handler Middleware (custom, maps domain exceptions -> proper status codes)
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -65,22 +75,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Global Exception Handler Middleware
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsJsonAsync(new
-        {
-            success = false,
-            message = "An internal server error occurred."
-        });
-    });
-});
-
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
