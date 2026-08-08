@@ -13,6 +13,12 @@
   <ItemGroup>
     <ProjectReference Include="../Shared.Auth/Shared.Auth.csproj" />
     <ProjectReference Include="../Shared.Core/Shared.Core.csproj" />
+    <ProjectReference Include="..\AdminService.Application\AdminService.Application.csproj" />
+    <ProjectReference Include="..\AdminService.Infrastructure\AdminService.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dtos\Requests\" />
   </ItemGroup>
 
 </Project>

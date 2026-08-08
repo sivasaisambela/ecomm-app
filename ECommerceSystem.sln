@@ -55,13 +55,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderProcessor.Function", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CartService", "CartService", "{A87A1D83-DAFF-4A98-B8DC-0137DD0C1BAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Domain", "CartService.Domain\CartService.Domain.csproj", "{0972D71F-74CE-463B-ABA8-031BB80DC368}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Domain", "CartService.Domain\CartService.Domain.csproj", "{0972D71F-74CE-463B-ABA8-031BB80DC368}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Application", "CartService.Application\CartService.Application.csproj", "{321BF4E1-5737-46AE-9E58-460589E8055C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Application", "CartService.Application\CartService.Application.csproj", "{321BF4E1-5737-46AE-9E58-460589E8055C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Infrastructure", "CartService.Infrastructure\CartService.Infrastructure.csproj", "{190504C8-8C50-40ED-9B79-33B58B5BCDC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Infrastructure", "CartService.Infrastructure\CartService.Infrastructure.csproj", "{190504C8-8C50-40ED-9B79-33B58B5BCDC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Api", "CartService.Api\CartService.Api.csproj", "{56992EB8-577F-47BC-A7A9-12ACE7111A4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Api", "CartService.Api\CartService.Api.csproj", "{56992EB8-577F-47BC-A7A9-12ACE7111A4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminService.Domain", "AdminService.Domain\AdminService.Domain.csproj", "{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminService.Application", "AdminService.Application\AdminService.Application.csproj", "{FDFCAA46-07A2-441F-937F-238707AC1372}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminService.Infrastructure", "AdminService.Infrastructure\AdminService.Infrastructure.csproj", "{996FC763-ED6B-4688-9A85-0CA959700CC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -137,6 +143,18 @@ Global
 		{56992EB8-577F-47BC-A7A9-12ACE7111A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56992EB8-577F-47BC-A7A9-12ACE7111A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56992EB8-577F-47BC-A7A9-12ACE7111A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDFCAA46-07A2-441F-937F-238707AC1372}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDFCAA46-07A2-441F-937F-238707AC1372}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDFCAA46-07A2-441F-937F-238707AC1372}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDFCAA46-07A2-441F-937F-238707AC1372}.Release|Any CPU.Build.0 = Release|Any CPU
+		{996FC763-ED6B-4688-9A85-0CA959700CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{996FC763-ED6B-4688-9A85-0CA959700CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{996FC763-ED6B-4688-9A85-0CA959700CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{996FC763-ED6B-4688-9A85-0CA959700CC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +188,9 @@ Global
 		{321BF4E1-5737-46AE-9E58-460589E8055C} = {A87A1D83-DAFF-4A98-B8DC-0137DD0C1BAF}
 		{190504C8-8C50-40ED-9B79-33B58B5BCDC8} = {A87A1D83-DAFF-4A98-B8DC-0137DD0C1BAF}
 		{56992EB8-577F-47BC-A7A9-12ACE7111A4B} = {A87A1D83-DAFF-4A98-B8DC-0137DD0C1BAF}
+		{7B4360EC-8D2E-4AA8-BAAE-7948FE80FC1D} = {92CBED7C-6181-4C15-BEB4-2C135B7A0CE6}
+		{FDFCAA46-07A2-441F-937F-238707AC1372} = {92CBED7C-6181-4C15-BEB4-2C135B7A0CE6}
+		{996FC763-ED6B-4688-9A85-0CA959700CC5} = {92CBED7C-6181-4C15-BEB4-2C135B7A0CE6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CC89035-84EB-4CFA-8BE2-F6F3128F193F}

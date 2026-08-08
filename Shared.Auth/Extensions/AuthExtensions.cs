@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,11 +14,22 @@ namespace Shared.Auth.Extensions
     {
         public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-            services.AddScoped<IJwtTokenService, JwtTokenService>();
+            var jwtSection = configuration.GetSection(JwtOptions.SectionName);
+            services.Configure<JwtOptions>(jwtSection);
 
-            var jwtOptions = configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+            var jwtOptions = jwtSection.Get<JwtOptions>()
                              ?? throw new InvalidOperationException("Jwt configuration is missing.");
+
+            if (string.IsNullOrWhiteSpace(jwtOptions.Issuer))
+                throw new InvalidOperationException("Jwt:Issuer is missing.");
+            if (string.IsNullOrWhiteSpace(jwtOptions.Audience))
+                throw new InvalidOperationException("Jwt:Audience is missing.");
+            if (string.IsNullOrWhiteSpace(jwtOptions.Key))
+                throw new InvalidOperationException("Jwt:Key is missing.");
+            if (jwtOptions.ExpiryMinutes <= 0)
+                throw new InvalidOperationException("Jwt:ExpiryMinutes must be greater than zero.");
+
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -30,7 +42,9 @@ namespace Shared.Auth.Extensions
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = jwtOptions.Issuer,
                         ValidAudience = jwtOptions.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                        NameClaimType = ClaimTypes.NameIdentifier,
+                        RoleClaimType = ClaimTypes.Role
                     };
                 });
 
