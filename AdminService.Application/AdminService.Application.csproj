@@ -8,13 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AdminService.Domain\AdminService.Domain.csproj" />
+
     <ProjectReference Include="..\Shared.Core\Shared.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Services\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

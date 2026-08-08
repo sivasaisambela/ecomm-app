@@ -1,4 +1,8 @@
-
+using AdminService.Application.Interfaces;
+using AdminService.Application.Services;
+using AdminService.Infrastructure.Persistence;
+using AdminService.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Shared.Auth.Extensions;
 
 namespace AdminService.Api
@@ -13,7 +17,13 @@ namespace AdminService.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddJwtAuth(builder.Configuration);
+            builder.Services.AddJwtAuth(builder.Configuration);     
+
+            builder.Services.AddDbContext<AdminDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
             var app = builder.Build();
 
