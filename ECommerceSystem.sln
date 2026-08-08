@@ -27,31 +27,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdminService", "AdminService", "{92CBED7C-6181-4C15-BEB4-2C135B7A0CE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Core", "Shared.Core\Shared.Core.csproj", "{5D31E0D4-58A5-448D-908E-DA42FE8E2BD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Core", "Shared.Core\Shared.Core.csproj", "{5D31E0D4-58A5-448D-908E-DA42FE8E2BD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Auth", "Shared.Auth\Shared.Auth.csproj", "{5FD8645A-9A38-4F75-B380-FC680AC03691}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared.Auth", "Shared.Auth\Shared.Auth.csproj", "{5FD8645A-9A38-4F75-B380-FC680AC03691}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Domain", "ProductService.Domain\ProductService.Domain.csproj", "{CD4AB867-CC94-47BD-B2A9-3379A4A5AE17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Domain", "ProductService.Domain\ProductService.Domain.csproj", "{CD4AB867-CC94-47BD-B2A9-3379A4A5AE17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Application", "ProductService.Application\ProductService.Application.csproj", "{8F3DA856-6C36-4BA2-B335-E8F8861ED75B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Application", "ProductService.Application\ProductService.Application.csproj", "{8F3DA856-6C36-4BA2-B335-E8F8861ED75B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Infrastructure", "ProductService.Infrastructure\ProductService.Infrastructure.csproj", "{A2801754-3CAA-462D-A4E7-401A130E553E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Infrastructure", "ProductService.Infrastructure\ProductService.Infrastructure.csproj", "{A2801754-3CAA-462D-A4E7-401A130E553E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.Api", "ProductService.Api\ProductService.Api.csproj", "{88ABEA3C-6FB0-4821-8C30-9721BB48B8E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Api", "ProductService.Api\ProductService.Api.csproj", "{88ABEA3C-6FB0-4821-8C30-9721BB48B8E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Domain", "OrderService.Domain\OrderService.Domain.csproj", "{0E759B00-3383-4BCE-B7AF-D6EC4BF9BCE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Domain", "OrderService.Domain\OrderService.Domain.csproj", "{0E759B00-3383-4BCE-B7AF-D6EC4BF9BCE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Application", "OrderService.Application\OrderService.Application.csproj", "{8DE4DA6F-65F6-4227-843D-4EAC0BB7D760}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Application", "OrderService.Application\OrderService.Application.csproj", "{8DE4DA6F-65F6-4227-843D-4EAC0BB7D760}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Infrastructure", "OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{BE9922E8-560F-49B3-8153-0322761E2D1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Infrastructure", "OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{BE9922E8-560F-49B3-8153-0322761E2D1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Api", "OrderService.Api\OrderService.Api.csproj", "{55A07DCB-9B71-4D84-8977-263DDA2A8DDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Api", "OrderService.Api\OrderService.Api.csproj", "{55A07DCB-9B71-4D84-8977-263DDA2A8DDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{0EBF6FF3-08B4-41E1-8F3F-3DA8C517A7A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{0EBF6FF3-08B4-41E1-8F3F-3DA8C517A7A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminService.Api", "AdminService.Api\AdminService.Api.csproj", "{CD35AE2D-BF56-4E4E-B8FC-A23FAC5D49F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminService.Api", "AdminService.Api\AdminService.Api.csproj", "{CD35AE2D-BF56-4E4E-B8FC-A23FAC5D49F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderProcessor.Function", "OrderProcessor.Function\OrderProcessor.Function.csproj", "{526F0EF2-CB79-4BC6-9F82-82883E87D4EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderProcessor.Function", "OrderProcessor.Function\OrderProcessor.Function.csproj", "{526F0EF2-CB79-4BC6-9F82-82883E87D4EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
