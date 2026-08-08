@@ -8,8 +8,9 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: orderprocessor-func
+  RESOURCE_GROUP_NAME: rg-ecomm-app-dev
   DOTNET_VERSION: "8.0.x"
-  FUNCTIONAPP_PATH: OrderProcessor.Function
+  FUNCTIONAPP_PROJECT: OrderProcessor.Function/OrderProcessor.Function.csproj
 
 jobs:
   build-and-deploy:
@@ -25,17 +26,27 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore ${{ env.FUNCTIONAPP_PATH }}/${{ env.FUNCTIONAPP_PATH }}.csproj
+        run: dotnet restore ${{ env.FUNCTIONAPP_PROJECT }}
 
       - name: Build
-        run: dotnet build ${{ env.FUNCTIONAPP_PATH }}/${{ env.FUNCTIONAPP_PATH }}.csproj --configuration Release --no-restore
+        run: dotnet build ${{ env.FUNCTIONAPP_PROJECT }} --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ${{ env.FUNCTIONAPP_PATH }}/${{ env.FUNCTIONAPP_PATH }}.csproj --configuration Release --output ./publish
+        run: dotnet publish ${{ env.FUNCTIONAPP_PROJECT }} --configuration Release --output ./publish
 
-      - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
+      - name: Zip publish output
+        run: |
+          cd publish
+          zip -r ../functionapp.zip .
+
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: ./publish
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ZIP to Azure Function App
+        run: |
+          az functionapp deployment source config-zip \
+            --resource-group ${{ env.RESOURCE_GROUP_NAME }} \
+            --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
+            --src functionapp.zip
