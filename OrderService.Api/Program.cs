@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using FluentValidation;
 using OrderService.Application.Validators;
 using OrderService.Api.Middleware;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace OrderService.Api
 {
@@ -30,6 +32,21 @@ namespace OrderService.Api
             // =========================================================================
             // 2. DEPENDENCY INJECTION REGISTRATION
             // =========================================================================
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderEventPublisher>(sp =>
+                        {
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                var logger = sp.GetRequiredService<ILogger<OrderEventPublisher>>();
+                
+                var queueConnectionString = configuration.GetConnectionString("AzureQueueConnection")
+                                    ?? throw new InvalidOperationException("Connection string 'AzureQueueConnection' not found in configuration.");
+                
+                var queueName = configuration["AzureQueue:QueueName"]
+                                    ?? throw new InvalidOperationException("Configuration 'AzureQueues:QueueName' not found.");
+                
+                               return new OrderEventPublisher(queueConnectionString, queueName, logger);
+                           });
+            builder.Services.AddScoped<IOrderApplicationService, OrderApplicationService>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderApplicationService, OrderApplicationService>();
 
